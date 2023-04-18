@@ -1,7 +1,11 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.util.Scanner;
 import org.json.JSONObject;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,32 +14,51 @@ public class Main {
             System.out.println("Enter the path of the XML file: ");
             String filePath = scanner.nextLine();
 
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            StringBuilder xmlContent = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                xmlContent.append(line.trim());
-            }
-            reader.close();
-
-            JSONObject jsonObj = new JSONObject(xmlContent.toString());
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
 
             System.out.println("Enter the field(s) you want to extract (comma-separated): ");
             String fieldsStr = scanner.nextLine();
             String[] fields = fieldsStr.split(",");
 
             JSONObject selectedFieldsObj = new JSONObject();
-            for (String field : fields) {
-                if (jsonObj.has(field.trim())) {
-                    selectedFieldsObj.put(field.trim(), jsonObj.get(field.trim()));
-                } else {
-                    System.out.println("Field not found: " + field.trim());
+            DefaultHandler handler = new DefaultHandler() {
+                private String currentField = "";
+                private boolean isCurrentFieldSelected = false;
+
+                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                    if (containsField(fields, qName)) {
+                        currentField = qName;
+                        isCurrentFieldSelected = true;
+                    } else {
+                        isCurrentFieldSelected = false;
+                    }
                 }
-            }
+
+                public void characters(char ch[], int start, int length) throws SAXException {
+                    if (isCurrentFieldSelected) {
+                        String fieldValue = new String(ch, start, length).trim();
+                        if (!fieldValue.isEmpty()) {
+                            selectedFieldsObj.put(currentField, fieldValue);
+                        }
+                    }
+                }
+            };
+
+            saxParser.parse(new File(filePath), handler);
 
             System.out.println(selectedFieldsObj.toString(4));
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    private static boolean containsField(String[] fields, String fieldName) {
+        for (String field : fields) {
+            if (field.trim().equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
