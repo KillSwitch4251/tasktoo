@@ -3,7 +3,7 @@ import java.io.FileReader;
 import java.util.Scanner;
 import org.json.JSONObject;
 
-public class XMLReader {
+public class Main {
     public static void main(String[] args) {
         try {
             Scanner scanner = new Scanner(System.in);
@@ -26,7 +26,11 @@ public class XMLReader {
 
             JSONObject selectedFieldsObj = new JSONObject();
             for (String field : fields) {
-                selectedFieldsObj.put(field.trim(), jsonObj.get(field.trim()));
+                if (jsonObj.has(field.trim())) {
+                    selectedFieldsObj.put(field.trim(), jsonObj.get(field.trim()));
+                } else {
+                    System.out.println("Field not found: " + field.trim());
+                }
             }
 
             System.out.println(selectedFieldsObj.toString(4));
