@@ -5,7 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
-public class XMLReader {
+public class Main {
     public static void main(String[] args) {
         try {
             File xmlFile = new File("employee.xml");
@@ -18,23 +18,46 @@ public class XMLReader {
             // Normalize the document to remove any extraneous white space
             doc.getDocumentElement().normalize();
 
-            // Get the fields from the XML document
-            String id = doc.getElementsByTagName("id").item(0).getTextContent();
-            String name = doc.getElementsByTagName("name").item(0).getTextContent();
-            String postalZip = doc.getElementsByTagName("postalZip").item(0).getTextContent();
-            String region = doc.getElementsByTagName("region").item(0).getTextContent();
-            String country = doc.getElementsByTagName("country").item(0).getTextContent();
-            String address = doc.getElementsByTagName("address").item(0).getTextContent();
-            String list = doc.getElementsByTagName("list").item(0).getTextContent();
-
-            // Print out the field values
-            System.out.println("ID: " + id);
-            System.out.println("Name: " + name);
-            System.out.println("Postal Zip: " + postalZip);
-            System.out.println("Region: " + region);
-            System.out.println("Country: " + country);
-            System.out.println("Address: " + address);
-            System.out.println("List: " + list);
+            // Check if the user has specified which fields to output
+            if (args.length > 0) {
+                // Loop through the specified fields and output their values
+                for (String field : args) {
+                    switch (field) {
+                        case "id":
+                            System.out.println("ID: " + doc.getElementsByTagName("id").item(0).getTextContent());
+                            break;
+                        case "name":
+                            System.out.println("Name: " + doc.getElementsByTagName("name").item(0).getTextContent());
+                            break;
+                        case "postalZip":
+                            System.out.println("Postal Zip: " + doc.getElementsByTagName("postalZip").item(0).getTextContent());
+                            break;
+                        case "region":
+                            System.out.println("Region: " + doc.getElementsByTagName("region").item(0).getTextContent());
+                            break;
+                        case "country":
+                            System.out.println("Country: " + doc.getElementsByTagName("country").item(0).getTextContent());
+                            break;
+                        case "address":
+                            System.out.println("Address: " + doc.getElementsByTagName("address").item(0).getTextContent());
+                            break;
+                        case "list":
+                            System.out.println("List: " + doc.getElementsByTagName("list").item(0).getTextContent());
+                            break;
+                        default:
+                            System.out.println("Invalid field: " + field);
+                    }
+                }
+            } else {
+                // If no fields are specified, output all fields
+                System.out.println("ID: " + doc.getElementsByTagName("id").item(0).getTextContent());
+                System.out.println("Name: " + doc.getElementsByTagName("name").item(0).getTextContent());
+                System.out.println("Postal Zip: " + doc.getElementsByTagName("postalZip").item(0).getTextContent());
+                System.out.println("Region: " + doc.getElementsByTagName("region").item(0).getTextContent());
+                System.out.println("Country: " + doc.getElementsByTagName("country").item(0).getTextContent());
+                System.out.println("Address: " + doc.getElementsByTagName("address").item(0).getTextContent());
+                System.out.println("List: " + doc.getElementsByTagName("list").item(0).getTextContent());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
